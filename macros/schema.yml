@@ -1,0 +1,37 @@
+version: 2
+
+macros:
+  - name: generate_models_yaml
+    description: >-
+      A helper function to generate a stub `schema.yml`
+      file for the given model names
+    arguments:
+      - name: model_names
+        type: list
+        description: The name of the models to document
+      - name: include_description
+        type: boolean
+        description: >-
+          If `true`, includes an empty description field
+          for all *columns* (models always have a description
+          field)
+  - name: generate_sources_yaml
+    description: >-
+      A helper function to generate a stub `schema.yml`
+      file for the given source database and schema names
+      `Znalytics`, `Ercot`, `Marketdata` or `Salesforce`
+      sources
+    arguments:
+      - name: model_names
+        type: list
+        description: The name of the models to document
+      - name: include_description
+        type: boolean
+        description: >-
+          If `true`, includes an empty description field
+          for all *columns* (models always have a description
+          field)
+  - name: grant_select_on_schemas
+    description: >-
+      Grants select on tables and views to the `dbt_analyst` role after
+      schemas have been created
