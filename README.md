@@ -6,7 +6,7 @@ Add the following to `packages.yml` at the top level of your dbt project:
 
 ```
   - git: "https://{{env_var('DBT_GITLAB_USER')}}:{{env_var('DBT_ENV_SECRET_GITLAB')}}@gitlab.com/branchenergy/data/dbt/branch_utils.git"
-    revision: 0.1.0
+    revision: 0.1.1
 ```
 
 Update the [Environment Variables](https://docs.getdbt.com/docs/dbt-cloud/using-dbt-cloud/cloud-environment-variables/)
