@@ -1,8 +1,4 @@
-{% macro store_tests_summary(use_prod_source=true) -%}
-  {{ return(adapter.dispatch('store_tests_summary'), (use_prod_source)) }}
-{%- endmacro %}
-
-{% macro default__store_tests_summary(use_prod_source=true) %}
+{% macro store_tests_summary(use_prod_source=true) %}
 {% if use_prod_source %}
     {% set table_schema = "prod_dbt_test__audit" %}
 {% else %}
