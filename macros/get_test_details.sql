@@ -1,4 +1,5 @@
 {% macro get_test_details() %}
+{% if execute %}
 {%- set tests = dict() -%}
 {%- for key, test in graph.nodes.items() -%}
     {%- if key.startswith("test." ~ project_name) -%}
@@ -28,4 +29,5 @@ from
     model_name,
     column_name
 )
+{% endif %}
 {% endmacro %}
