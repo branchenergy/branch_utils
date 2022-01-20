@@ -1,19 +1,3 @@
-{% macro get_tables_in_schema(schema_name, database_name=target.database) %}
-
-    {% set tables=dbt_utils.get_relations_by_pattern(
-            database=database_name,
-            schema_pattern=schema_name,
-            table_pattern='%'
-    ) %}
-
-    {% set table_list= tables | map(attribute='identifier') %}
-
-    {{ return(table_list | sort) }}
-
-{% endmacro %}
-
-
----
 {% macro generate_sources_yaml(
     schema_names=[],
     database_name=target.database,
