@@ -1,5 +1,5 @@
 {% macro store_tests_summary(use_prod_source=true) -%}
-  {{ return(adapter.dispatch('store_tests_summary', (use_prod_source))) }}
+  {{ return(adapter.dispatch('store_tests_summary'), (use_prod_source)) }}
 {%- endmacro %}
 
 {% macro default__store_tests_summary(use_prod_source=true) %}
