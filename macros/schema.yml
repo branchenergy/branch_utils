@@ -1,0 +1,138 @@
+version: 2
+
+macros:
+
+  - name: audit_model
+    description: >
+      Given a model name and a unique (primary) key, compares the model in the current
+      schema with the same model in a target schema, by default `prod` (or the prod
+      equivalent of whichever schema the given model is in). This uses the
+      `compare_columns_values` macro once it has worked out what the column names are.
+    arguments:
+      - name: model_name
+        type: string
+        description: Model name
+      - name: unique_key
+        type: string
+        description: Unique/primary key of the given model
+      - name: prod_schema
+        type: string
+        description: >
+          Schema in which another version of the same model exists, by default `"prod"`.
+          If this model is not in the base schema (e.g. somewhere like `prod_staging`),
+          only the base schema needs to be given.
+      - name: source_name
+        type: string
+        description: Name of the source in the output table
+      - name: target_name
+        type: string
+        description: Name of the target in the output table
+      - name: renamed_columns_map
+        type: dictionary
+        description: >
+          For columns that have been renamed, a mapping from the *original* name in the
+          model in the *prod* schema, *to* the *new* name in the current schema.
+      - name: add_order_by
+        type: boolean
+        description: >
+          If `true`, adds an `order by` clause at the end of the query
+  
+  - name: compare_columns_values
+    description: >
+      Similar to `dbt_utils`' `compare_column_values` (one column); this macro generates
+      a query that compares *all* the output columns from two separate queries.
+    arguments:
+      - name: source_query
+        type: string
+        description: Source query
+      - name: target_query
+        type: string
+        description: Target query
+      - name: primary_key
+        type: string
+        description: Primary key for joining the two queries' results
+      - name: columns_to_compare
+        type: list
+        description: >
+          List of columns to compare; must appear in both queries (ignoring the
+          `renamed_columns_map`)
+      - name: add_order_by
+        type: boolean
+        description: >
+          If `true`, adds an `order by` clause at the end of the query
+      - name: source_name
+        type: string
+        description: Name of the source in the output table
+      - name: target_name
+        type: string
+        description: Name of the target in the output table
+      - name: renamed_columns_map
+        type: dictionary
+        description: >
+          For columns that have been renamed, a mapping from the *original* name in the
+          model in the *prod* schema, *to* the *new* name in the current schema.
+
+  - name: generate_models_yaml
+    description: >
+      A helper function to generate a stub `schema.yml`
+      file for the given model names
+    arguments:
+      - name: model_names
+        type: list
+        description: The name of the models to document
+      - name: include_description
+        type: boolean
+        description: >
+          If `true`, includes an empty description field for all *columns* (models
+          always have a description field)
+
+  - name: generate_sources_yaml
+    description: >
+      A helper function to generate a stub `schema.yml` file for the given source
+      database and schema names.
+    arguments:
+      - name: model_names
+        type: list
+        description: The name of the models to document
+      - name: include_description
+        type: boolean
+        description: >
+          If `true`, includes an empty description field
+          for all *columns* (models always have a description
+          field)
+  
+  - name: get_test_details
+    description: >
+      Get the name, alias, type (unique, relationship, etc.), model name and column name
+      of the tests currently stored in the dbt project, and return the results in a
+      `select` statement. The returned columns are as follows:
+
+      - `test_name`
+      - `test_alias`
+      - `test_type_name`
+      - `model_name`
+
+      - `column_name`
+
+      For custom tests, only the first two columns are populated; `model_name` and
+      `column_name` may not be populated, depending on the test type. In cases where
+      tests are on *sources*, this will be the name of the source file (rather than
+      of the source table itself).
+
+  - name: grant_select_on_schemas
+    description: >
+      Grants select on tables and views to the `dbt_analyst` role after schemas have
+      been created
+
+  - name: store_tests_summary
+    description: >
+      Store the row counts of any tests in the `*_dbt_test__audit` schema in a
+      `_audit` schema. The executing role needs read access on
+      `information_schema.tables` in the target database for this macro to work.
+    arguments:
+      - name: use_prod_source
+        type: boolean
+        description: >
+          If `true`, look at the tables in the `prod_dbt_test__audit` schema of the
+          current database, regardless of what the current schema is. If `false`, look
+          at the tables in the `{{ schema }}_dbt_test__audit` schema.
